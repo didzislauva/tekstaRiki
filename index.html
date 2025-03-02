@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Processor</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --primary-light: rgba(74, 111, 165, 0.1);
+            --secondary-color: #6b8cae;
+            --accent-color: #e63946;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            resize: vertical;
+            font-family: inherit;
+            transition: border 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            transition: all 0.3s;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .options {
+            margin-top: 15px;
+            padding: 20px;
+            background-color: #f0f4f8;
+            border-radius: var(--border-radius);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .options-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .option-card {
+            background-color: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .option-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* Custom checkbox styles */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .toggle-label {
+            flex: 1;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--primary-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* Range slider styles */
+        .slider-control {
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .slider-label {
+            font-weight: 500;
+        }
+        
+        .slider-value {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            transition: background .3s;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            transition: background .3s;
+            border: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--secondary-color);
+        }
+        
+        input[type="range"]::-moz-range-thumb:hover {
+            background: var(--secondary-color);
+        }
+        
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 6px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        .option-description {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Treniņa teksta ar kļūdām veidotājs</h1>
+        
+        <div class="form-group">
+		<p>Šis rīks ir paredzēts skolotājiem, lai radītu mācību materiālus bērniem, kuros tiek simulētas izlaistas un akcentētas burtu kļūdas, kā arī trūkstošas pieturzīmes, palīdzot attīstīt valodas prasmes un teksta izpratni.</p>
+            <label for="inputText">Ievadi tekstu:</label>
+            <textarea id="inputText" placeholder="Iekopē savu tekstu šeit...">Teksta paraugs.
+
+Mazā Madara ļoti priecājās, jo viņa kopā ar vecākiem dosies ceļojumā uz Itāliju. Viņi bija izplānojuši apskatīt īstu vulkānu. Madara jau sen sapņoja redzēt, kā izskatās vulkāns, jo viņai ļoti patika dabas zinātnes. Viņa bija lasījusi grāmatās par lavas upēm un dūmu mākoņiem, kas paceļas debesīs. Viņa bija sagatavojusi savu piezīmju burtnīcu, lai pierakstītu visu, ko uzzinās ceļojuma laikā.
+
+Ceļojums sākās agri no rīta. Madara kopā ar vecākiem devās uz lidostu. Lidmašīna bija liela, un aiz loga varēja redzēt mākoņus. Kad viņi nolaidās Itālijā, laiks bija silts un saulains. Viņi iekāpa autobusā, kas viņus aizveda tuvāk vulkānam. Braucot, Madara vēroja augstus kalnus, kas bija redzami tālumā.
+
+Pēc vairākām stundām viņi beidzot sasniedza galamērķi. Priekšā pacēlās milzīgs vulkāns. No tā augšas cēlās plāni dūmu pavedieni. Madara bija sajūsmā! Viņi devās kopā ar gidu, kurš stāstīja par vulkāna vēsturi. Viņa uzzināja, ka šis vulkāns pēdējo reizi izvirdis pirms vairākiem gadiem un ka cilvēki dzīvo tā pakājē, neraugoties uz to, ka tas joprojām ir aktīvs.
+
+Viņi devās tuvāk vulkānam pa speciāli izveidotu taku. Apkārt bija daudz akmeņu, un vietām no zemes nāca karsti tvaiki. Madara ar interesi pieskārās vienam akmenim – tas bija silts! Viņa uzreiz pierakstīja savos pierakstos, ka vulkāna tuvumā zeme ir silta un ka tur smaržo pēc sēra.
+
+Pēc pārgājiena viņi apmeklēja vulkāna muzeju. Tur bija daudz dažādu eksponātu. Madara apskatīja lavas paraugus un uzzināja, kā veidojas vulkāni. Viņai ļoti patika redzēt vulkāna izvirduma attēlus un video, kas rādīja, kā lavas straume tek lejup no kalna.
+
+Vakarā viņi atgriezās viesnīcā. Madara bija nogurusi, bet ļoti priecīga. Viņa ilgi skatījās pa logu uz vulkānu, kas tagad tumšā naktī izskatījās vēl noslēpumaināks. Pirms gulētiešanas viņa izlasīja savus pierakstus un nolēma, ka kādreiz noteikti atgriezīsies Itālijā, lai redzētu vēl citus vulkānus.</textarea>
+        </div>
+        
+        <div class="options">
+            <div class="options-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                Pārstrādes iespējas
+            </div>
+            
+            <div class="options-grid">
+                <div class="option-card">
+                    <div class="toggle-container">
+                        <span class="toggle-label">Pārvērst visu tekstu uz mazajiem burtiem</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="toLower">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <p class="option-description">Pārveido visus teksta burtus uz mazajiem burtiem. Piemēram, "TEKSTS" → "teksts".</p>
+                </div>
+                
+                <div class="option-card">
+                    <div class="toggle-container">
+                        <span class="toggle-label">Izdzēst visas pieturzīmes</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="removePunctuation">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <p class="option-description">Noņem visas pieturzīmes un simbolus no teksta.</p>
+                </div>
+                
+                <div class="option-card">
+                    <div class="toggle-container">
+                        <span class="toggle-label">Nomainīt akcentētos burtus</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="replaceAccents">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <p class="option-description">Nomaina akcentētos burtus ar parastajiem burtiem (ā → a, ē → e, utt.).</p>
+                    
+                    <div class="slider-control">
+                        <div class="slider-header">
+                            <span class="slider-label">Akcentēto burtu kļūdu apjoms:</span>
+                            <span class="slider-value" id="accentValue">30%</span>
+                        </div>
+                        <input type="range" id="accentPercent" min="0" max="100" value="30" step="1" oninput="updateSliderValue()">
+                    </div>
+                </div>
+                
+                <div class="option-card">
+                    <div class="toggle-container">
+                        <span class="toggle-label">Pazaudēt vārdā burtu</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="removeLetter">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <p class="option-description">Nejauši izdzēš burtu no vārda, simulējot drukas kļūdas.</p>
+                    
+                    <div class="slider-control">
+                        <div class="slider-header">
+                            <span class="slider-label">Pazaudēto burtu apjoms:</span>
+                            <span class="slider-value" id="letterValue">2%</span>
+                        </div>
+                        <input type="range" id="letterPercent" min="0" max="10" value="2" step="1" oninput="updateLetterSlider()">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <button onclick="processText()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 11 12 14 22 4"></polyline>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+                Apstrādāt tekstu
+            </button>
+        </div>
+        
+        <div class="form-group">
+            <label for="outputText">Apstrādātais teksts:</label>
+            <textarea id="outputText" placeholder="Apstrādātais teksts parādīsies šeit..." readonly></textarea>
+        </div>
+        
+        <div id="processingStatus" class="status"></div>
+    </div>
+    
+    <script>
+        function updateSliderValue() {
+            const value = document.getElementById("accentPercent").value;
+            document.getElementById("accentValue").innerText = value + "%";
+        }
+        
+        function updateLetterSlider() {
+            const value = document.getElementById("letterPercent").value;
+            document.getElementById("letterValue").innerText = value + "%";
+        }
+        
+        function processText() {
+            let input = document.getElementById("inputText").value;
+            let processedText = input;
+            
+            // Show processing status
+            const statusElement = document.getElementById("processingStatus");
+            statusElement.innerHTML = "Apstrādā tekstu...";
+            statusElement.style.display = "block";
+            statusElement.className = "status";
+            
+            setTimeout(() => {
+                if (document.getElementById("toLower").checked) {
+                    processedText = processedText.toLowerCase();
+                }
+                
+                if (document.getElementById("removePunctuation").checked) {
+                    processedText = processedText.replace(/[.,!?;:'"()\[\]{}\/\\<>%$#@^&*_+=|~`]/g, "");
+                }
+                
+                if (document.getElementById("removeLetter").checked) {
+                    let percent = document.getElementById("letterPercent").value / 100;
+                    processedText = processedText.split(" ").map(word => {
+                        if (word.length > 2 && Math.random() < percent) {
+                            let index = Math.floor(Math.random() * (word.length - 2)) + 1;
+                            return word.slice(0, index) + word.slice(index + 1);
+                        }
+                        return word;
+                    }).join(" ");
+                }
+                
+                if (document.getElementById("replaceAccents").checked) {
+                    let replacements = { 
+                        "ā": "a", "č": "c", "ē": "e", "ģ": "g", "ī": "i", "ķ": "k", 
+                        "ļ": "l", "ņ": "n", "š": "s", "ū": "u", "ž": "z",
+                        "Ā": "A", "Č": "C", "Ē": "E", "Ģ": "G", "Ī": "I", "Ķ": "K", 
+                        "Ļ": "L", "Ņ": "N", "Š": "S", "Ū": "U", "Ž": "Z"
+                    };
+                    let percent = document.getElementById("accentPercent").value / 100;
+                    processedText = processedText.split('').map(char => {
+                        if (replacements[char] && Math.random() < percent) {
+                            return replacements[char];
+                        }
+                        return char;
+                    }).join('');
+                }
+                
+                document.getElementById("outputText").value = processedText;
+                
+                // Update status
+                statusElement.innerHTML = "Teksts veiksmīgi apstrādāts!";
+                statusElement.className = "status success";
+                
+                // Hide status after 3 seconds
+                setTimeout(() => {
+                    statusElement.style.display = "none";
+                }, 3000);
+            }, 300);
+        }
+        
+        // Initialize sliders
+        updateSliderValue();
+        updateLetterSlider();
+    </script>
+</body>
+</html>
