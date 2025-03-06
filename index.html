@@ -375,6 +375,25 @@ Vakarā viņi atgriezās viesnīcā. Madara bija nogurusi, bet ļoti priecīga. 
                         <input type="range" id="letterPercent" min="0" max="10" value="2" step="1" oninput="updateLetterSlider()">
                     </div>
                 </div>
+				
+				<div class="option-card">
+					<div class="toggle-container">
+						<span class="toggle-label">Simulēt QWERTY kļūdas</span>
+						<label class="toggle-switch">
+							<input type="checkbox" id="qwertyMistakes">
+							<span class="slider"></span>
+						</label>
+					</div>
+					<p class="option-description">Nejauši nomaina burtu ar tā tuvāko QWERTY kaimiņu, simulējot rakstīšanas kļūdas.</p>
+					
+					<div class="slider-control">
+						<div class="slider-header">
+							<span class="slider-label">Kļūdu apjoms:</span>
+							<span class="slider-value" id="qwertyValue">5%</span>
+						</div>
+						<input type="range" id="qwertyPercent" min="0" max="100" value="5" step="1" oninput="document.getElementById('qwertyValue').innerText = this.value + '%'">
+					</div>
+				</div>
             </div>
         </div>
         
@@ -397,6 +416,36 @@ Vakarā viņi atgriezās viesnīcā. Madara bija nogurusi, bet ļoti priecīga. 
     </div>
     
     <script>
+	
+		const qwertyMap = {
+			"q": ["w", "a"],
+			"w": ["q", "e", "s"],
+			"e": ["w", "r", "d"],
+			"r": ["e", "t", "f"],
+			"t": ["r", "y", "g"],
+			"y": ["t", "u", "h"],
+			"u": ["y", "i", "j"],
+			"i": ["u", "o", "k"],
+			"o": ["i", "p", "l"],
+			"p": ["o"],
+			"a": ["q", "s", "z"],
+			"s": ["a", "d", "w", "x"],
+			"d": ["s", "f", "e", "c"],
+			"f": ["d", "g", "r", "v"],
+			"g": ["f", "h", "t", "b"],
+			"h": ["g", "j", "y", "n"],
+			"j": ["h", "k", "u", "m"],
+			"k": ["j", "l", "i"],
+			"l": ["k", "o"],
+			"z": ["a", "x"],
+			"x": ["z", "c", "s"],
+			"c": ["x", "v", "d"],
+			"v": ["c", "b", "f"],
+			"b": ["v", "n", "g"],
+			"n": ["b", "m", "h"],
+			"m": ["n", "j"]
+		};
+
         function updateSliderValue() {
             const value = document.getElementById("accentPercent").value;
             document.getElementById("accentValue").innerText = value + "%";
@@ -452,6 +501,38 @@ Vakarā viņi atgriezās viesnīcā. Madara bija nogurusi, bet ļoti priecīga. 
                         return char;
                     }).join('');
                 }
+				
+				if (document.getElementById("qwertyMistakes").checked) {
+					let percent = document.getElementById("qwertyPercent").value / 100;
+					processedText = processedText.split(' ').map(word => {
+						// Only attempt to modify the word if the chance applies
+						if (word.length > 0 && Math.random() < percent) {
+							// Collect indices of characters that exist in the qwertyMap
+							let validIndices = [];
+							for (let i = 0; i < word.length; i++) {
+								let char = word[i].toLowerCase();
+								if (qwertyMap[char]) {
+									validIndices.push(i);
+								}
+							}
+							// If there's at least one valid character, replace one randomly
+							if (validIndices.length > 0) {
+								let randomIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+								let char = word[randomIndex];
+								let lowerChar = char.toLowerCase();
+								let neighbors = qwertyMap[lowerChar];
+								let replacement = neighbors[Math.floor(Math.random() * neighbors.length)];
+								// Preserve the original character's case
+								if (char === char.toUpperCase()) {
+									replacement = replacement.toUpperCase();
+								}
+								word = word.slice(0, randomIndex) + replacement + word.slice(randomIndex + 1);
+							}
+						}
+						return word;
+					}).join(" ");
+				}
+
                 
                 document.getElementById("outputText").value = processedText;
                 
