@@ -2,6 +2,7 @@
 
 Šis ir **teksta apstrādes rīks**, kas paredzēts skolotājiem, lai radītu mācību materiālus bērniem latviešu valodā. Tas palīdz sagatavot tekstus ar dažādām kļūdām, kuras bērni var labot, attīstot valodas prasmes.
 
+
 ## Funkcionalitāte
 ✅ **Automātiski apstrādā ievadīto tekstu:**  
 - Konvertē uz mazajiem burtiem (ja izvēlēts)
@@ -27,6 +28,9 @@
 Ja vēlaties izmantot rīku lokāli:
 1. Lejupielādējiet projekta failus no GitHub.
 2. Atveriet `index.html` savā pārlūkprogrammā.
+
+## Pieejams tiešsaistē
+https://didzislauva.github.io/tekstaRiki/
 
 ## Autors
 🔹 **Izstrādātājs:** Didzis Lauva
